@@ -22,9 +22,23 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
   TextEditingController ctrl_rec_value = TextEditingController();
   TextEditingController ctrl_recnotes = TextEditingController();
   TextEditingController ctrl_recuser = TextEditingController();
+  DropDown dropDownPayment = DropDown([
+    DropDownModel('نقدي', 0),
+    DropDownModel('شبكه', 1),
+    DropDownModel('فيزا', 2),
+    DropDownModel('تحويل بنكي', 3),
+    DropDownModel('شيك', 4),
+    DropDownModel('دفعات مقدمه', 5),
+  ]);
+  DropDown dropDown = DropDown([
+    DropDownModel('قبض عميل', 0),
+    DropDownModel('قبض اخرى', 1),
+    DropDownModel('اشعار خصم', 2),
+  ]);
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+
     return Scaffold(
         body: SafeArea(
             child: SingleChildScrollView(
@@ -35,12 +49,11 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
               child: Row(children: [
                 IconButton(
                   onPressed: () {
-                    sendResAPIClick(context);
+                    sendResAPIClick(context,ctrl_rec_value.text,ctrl_recnotes.text,ctrl_recuser.text,dropDownPayment.dropdownvalue.toString(),dropDown.dropdownvalue.toString());
                   },
                   icon: Icon(
                     Icons.save,
                     color: AppColors.white,
-
                   ),
                 ),
                 Spacer(),
@@ -147,11 +160,7 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
                         Theme.of(context).textTheme.titleSmall,
                         align: TextAlign.right,
                       )),
-                  DropDown([
-                    DropDownModel('قبض عميل', 0),
-                    DropDownModel('قبض اخرى', 1),
-                    DropDownModel('اشعار خصم', 2),
-                  ])
+                  dropDown
                 ],
               )),
           Container(
@@ -202,14 +211,7 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
                         Theme.of(context).textTheme.titleSmall,
                         align: TextAlign.right,
                       )),
-                  DropDown([
-                    DropDownModel('نقدي', 0),
-                    DropDownModel('شبكه', 1),
-                    DropDownModel('فيزا', 2),
-                    DropDownModel('تحويل بنكي', 3),
-                    DropDownModel('شيك', 4),
-                    DropDownModel('دفعات مقدمه', 5),
-                  ])
+                  dropDownPayment
                 ],
               )),
           Container(
@@ -243,7 +245,9 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
     )));
   }
 
-  Future<NewResModel?> sendResAPIClick(BuildContext mContext,) async {
+  Future<NewResModel?> sendResAPIClick(
+    BuildContext mContext,String recvalue,String recnotes, String recuser, String paytypename,String rectypename
+  ) async {
     showDialogProgress(mContext);
 
     Map<String, String> requestHeaders = {
@@ -264,20 +268,20 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
       body: jsonEncode(<String, String>{
         'recdocno': '1',
         'recdate': '01/01/2022',
-        'recvalue': '500',
-        'recuser': 'admin',
+        'recvalue': recvalue,
+        'recuser': recuser,
         'paytypeid': '1',
-        'paytypename': 'نقدي',
+        'paytypename':paytypename,
         'paychartid': '1',
         'recbranchid': '1',
         'branchname': 'الفرع الرئيسي',
         'recman': 'ahmed atef',
-        'recnotes': 'test',
+        'recnotes': recnotes,
         'payref': 'test',
         'fromchartid': "1",
         'paynotes': 'a',
         'rectype': '1',
-        'rectypename': 'مصاريف',
+        'rectypename':rectypename,
       }),
     );
 
